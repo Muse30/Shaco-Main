@@ -17,32 +17,6 @@ namespace Shaco
     public static class Program
     {
         public static AIHeroClient player = ObjectManager.Player;
-        public static Item botrk = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item tiamat = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item hydra = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item titanic = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item randuins = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item odins = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item bilgewater = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item hexgun = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item Dfg = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item Bft = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item Ludens = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item Muramana = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item Muramana2 = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item sheen = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item gaunlet = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item trinity = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item lich = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item youmuu = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item frost = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item mountain = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item solari = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item Qss = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item Mercurial = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item Dervish = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item Zhonya = new Item((int)ItemId.Blade_of_the_Ruined_King);
-        public static Item Woooglet = new Item((int)ItemId.Blade_of_the_Ruined_King);
         public static bool QssUsed;
         public static float MuramanaTime;
         public static Obj_AI_Base hydraTarget;
@@ -54,7 +28,7 @@ namespace Shaco
         public static Spell.Skillshot W;
         public static Spell.Targeted Ignite;
         public static Spell.Active R2;
-        public static Menu ShacoMenu, ComboMenu, HarassMenu, LaneClearMenu, MiscMenu, DrawingsMenu, SmiteMenu, escapeMenu;
+        public static Menu ShacoMenu, ComboMenu, HarassMenu, LaneClearMenu, MiscMenu, DrawingsMenu, SmiteMenu, fleeMenu, JungleMenu;
         private static CheckBox _useq;
         private static Slider _useqmin;
         private static CheckBox _usew;
@@ -106,7 +80,6 @@ namespace Shaco
         {
             get
             {
-                Obj_AI_Minion Clone = null;
                 if (Player.Spellbook.GetSpell(SpellSlot.R).Name != "hallucinateguide") return null;
                 return ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(m => m.Name == Player.Name && !m.IsMe);
             }
@@ -132,16 +105,9 @@ namespace Shaco
         private static void OnLoad(EventArgs args)
         {
             if (Player.Hero != Champion.Shaco) return;
-            Chat.Print("Shaco Ported", System.Drawing.Color.Red);
-            Q = new Spell.Targeted(SpellSlot.Q, 400);
-            W = new Spell.Skillshot(SpellSlot.W, 425, SkillShotType.Circular);
-            E = new Spell.Targeted(SpellSlot.E, 625);
-            R = new Spell.Targeted(SpellSlot.R, 2300);
-            R2 = new Spell.Active(SpellSlot.R, 200);
-            StealthTimer = new Text("", new Font("Verdana", 25F, FontStyle.Bold));
-          
-            ShacoMenu = MainMenu.AddMenu("Shaco Ported", "shaco");
-            //Drawings Menu
+            Chat.Print("Shaco Loaded", System.Drawing.Color.Magenta);
+
+            ShacoMenu = MainMenu.AddMenu("Shaco", "shaco");
             DrawingsMenu = ShacoMenu.AddSubMenu("Drawings", "drawingsmenu");
             DrawingsMenu.AddGroupLabel("Drawings Settings");
             DrawingsMenu.AddSeparator();
@@ -154,10 +120,10 @@ namespace Shaco
 
             ComboMenu = ShacoMenu.AddSubMenu("Combo", "Combo");
             ComboMenu.AddSeparator();
-            //Combo Menu
             _useitems = ComboMenu.Add("useitems", new CheckBox("Use Items"));
             _useq = ComboMenu.Add("useqcombo", new CheckBox("Use Q"));
             _useqmin = ComboMenu.Add("useminrange", new Slider("Q min range", 200, 0, 400));
+            ComboMenu.AddSeparator();
             _usew = ComboMenu.Add("usewcombo", new CheckBox("Use W"));
             _useecombo = ComboMenu.Add("useecombo", new CheckBox("Use E"));
             _user = ComboMenu.Add("usercombo", new CheckBox("Use R"));
@@ -166,49 +132,67 @@ namespace Shaco
             _waitforstealth = ComboMenu.Add("waitforstealth", new CheckBox("Dont use Spells in Q"));
             _useignite = ComboMenu.Add("useignite", new CheckBox("Use ignite"));
 
-            //Harass Menu
+
             HarassMenu = ShacoMenu.AddSubMenu("Harass", "harassmenu");
             HarassMenu.AddGroupLabel("Harass Settings");
             HarassMenu.AddSeparator();
             _useeharass = HarassMenu.Add("useeharass", new CheckBox("Use E Harass"));
-            //Misc Menu
-            MiscMenu = ShacoMenu.AddSubMenu("Clone Menu", "miscmenu");
+
+
+            MiscMenu = ShacoMenu.AddSubMenu("Misc Menu", "miscmenu");
             MiscMenu.AddGroupLabel("Misc Settings");
             MiscMenu.AddSeparator();
-            _stackbox = MiscMenu.Add("stackbox",
-    new KeyBind("Put box down", false, KeyBind.BindTypes.HoldActive, "G".ToCharArray()[0]));
+            _stackbox = MiscMenu.Add("stackbox",new KeyBind("Put box down", false, KeyBind.BindTypes.HoldActive, "G".ToCharArray()[0]));
             MiscMenu.Add("cloneorb",
              new KeyBind("Switch clone mode", false, KeyBind.BindTypes.PressToggle, "T".ToCharArray()[0]));
-            MiscMenu.AddSeparator();
-
+            MiscMenu.AddSeparator();        
             StringList(MiscMenu, "Clonetarget", "Clone Priority",
                 new[] { "Target Selector", "Lowest health", "Closest to you" }, 0);
+            MiscMenu.AddSeparator();
             StringList(MiscMenu, "clonemode", "Clone mode",
                 new[] { "Attack priority target", "Follow mouse" }, 0);
-            MiscMenu.Add("followmouse", new CheckBox("Follow mouse when there's no target"));         
+            MiscMenu.Add("followmouse", new CheckBox("Follow mouse when there's no target"));
             MiscMenu.AddSeparator();
             _jukefleewithclone = MiscMenu.Add("jukefleewithclone", new CheckBox("Juke flee with clone"));
             _jukefleepercentage = MiscMenu.Add("jukefleeminpercentage", new Slider("Juke flee health percent", 15));
-            MiscMenu.Add("ultwall", new CheckBox("Use ult to jump wall when fleeing"));
+            MiscMenu.AddSeparator();
             _ksq = MiscMenu.Add("ksq", new CheckBox("KS E"));
             _ks = MiscMenu.Add("ks", new CheckBox("KS QE"));
 
 
+            JungleMenu = ShacoMenu.AddSubMenu("Jungle", "junglemenu");
+            JungleMenu.AddGroupLabel("Jungle Settings");
+            JungleMenu.AddSeparator();
+            JungleMenu.Add("jungleE", new CheckBox("Use E"));
+            JungleMenu.Add("mana%", new Slider("Mana %", 30, 0, 100));
 
+            JungleMenu.AddSeparator();
+            JungleMenu.Add("smiteActive",
+            new KeyBind("Smite Active (toggle)", true, KeyBind.BindTypes.PressToggle, 'H'));
+            JungleMenu.AddSeparator();
+            JungleMenu.Add("useSlowSmite", new CheckBox("KS with Blue Smite"));
+            JungleMenu.Add("comboWithDuelSmite", new CheckBox("Combo with Red Smite"));
+            JungleMenu.AddSeparator();
+            JungleMenu.AddGroupLabel("Camps");
+            JungleMenu.AddLabel("Epics");
+            JungleMenu.Add("SRU_Baron", new CheckBox("Baron"));
+            JungleMenu.Add("SRU_Dragon", new CheckBox("Dragon"));
+            JungleMenu.AddLabel("Buffs");
+            JungleMenu.Add("SRU_Blue", new CheckBox("Blue"));
+            JungleMenu.Add("SRU_Red", new CheckBox("Red"));
+            JungleMenu.AddLabel("Small Camps");
+            JungleMenu.Add("SRU_Gromp", new CheckBox("Gromp", false));
+            JungleMenu.Add("SRU_Murkwolf", new CheckBox("Murkwolf", false));
+            JungleMenu.Add("SRU_Krug", new CheckBox("Krug", false));
+            JungleMenu.Add("SRU_Razorbeak", new CheckBox("Razerbeak", false));
+            JungleMenu.Add("Sru_Crab", new CheckBox("Skuttles", false));
 
+            fleeMenu = ShacoMenu.AddSubMenu("Flee", "escapesmenu");
+            _evadeQ = fleeMenu.Add("Escape", new CheckBox("Use Q to flee"));
+            _evade = fleeMenu.Add("Evade", new CheckBox("Evade With Ultimate"));
+            fleeMenu.AddSeparator();
+            fleeMenu.AddGroupLabel("To use Flee use your keybind in the orbwalker menu");
 
-            escapeMenu = ShacoMenu.AddSubMenu("Escape", "escapesmenu");
-            _evadeQ = escapeMenu.Add("Escape", new CheckBox("Use Q to flee"));
-            _evade = escapeMenu.Add("Evade", new CheckBox("Evade With Ultimate"));
-            escapeMenu.AddSeparator();
-            escapeMenu.AddGroupLabel("To use Flee use your keybind in the orbwalker menu");
-           
-
-
-            if (HasSpell("summonersmite"))
-            {
-               Smitemethod();
-            }
 
             var slot = Player.GetSpellSlotFromName("summonerdot");
             if (slot != SpellSlot.Unknown)
@@ -218,6 +202,13 @@ namespace Shaco
             Tiamat = new Item((int)ItemId.Tiamat_Melee_Only, 420);
             Hydra = new Item((int)ItemId.Ravenous_Hydra_Melee_Only, 420);
 
+            Q = new Spell.Targeted(SpellSlot.Q, 400);
+            W = new Spell.Skillshot(SpellSlot.W, 425, SkillShotType.Circular);
+            E = new Spell.Targeted(SpellSlot.E, 625);
+            R = new Spell.Targeted(SpellSlot.R, 2300);
+            R2 = new Spell.Active(SpellSlot.R, 200);
+            StealthTimer = new Text("", new Font("Verdana", 25F, FontStyle.Bold));
+
 
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
@@ -226,6 +217,7 @@ namespace Shaco
             Drawing.OnDraw += Drawing_OnDraw;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             Orbwalker.OnPostAttack += OrbwalkingOnAfterAttack;
+            Game.OnUpdate += SmiteEvent;
 
         }
 
@@ -308,7 +300,7 @@ namespace Shaco
         }
 
 
- 
+
 
         private static void Drawing_OnDraw(EventArgs args)
         {
@@ -344,7 +336,7 @@ namespace Shaco
             }
             if (!MiscMenu["cloneorb"].Cast<KeyBind>().CurrentValue && ObjectManager.Player.Level >= 6 && R.IsLearned)
             {
-                Drawing.DrawText(heropos.X - 40, heropos.Y + 20, System.Drawing.Color.White, "Clone mode: Follow Mouse");
+                Drawing.DrawText(heropos.X - 80, heropos.Y + 40, System.Drawing.Color.LightBlue, "Clone mode: Follow Mouse");
             }
 
 
@@ -458,8 +450,11 @@ namespace Shaco
             {
                 Escape();
             }
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JungleClear))
+            {
+                JungleClear();
+            }
 
-       
 
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear) || Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.JungleClear))
             {
@@ -536,9 +531,9 @@ namespace Shaco
                 moveClone();
             }
         }
-       
 
-public static void StringList(Menu menu, string uniqueId, string displayName, string[] values, int defaultValue)
+
+        public static void StringList(Menu menu, string uniqueId, string displayName, string[] values, int defaultValue)
         {
             var mode = menu.Add(uniqueId, new Slider(displayName, defaultValue, 0, values.Length - 1));
             mode.DisplayName = displayName + ": " + values[mode.CurrentValue];
@@ -735,32 +730,32 @@ public static void StringList(Menu menu, string uniqueId, string displayName, st
                     R.Cast();
                 }
                 if (Clone != null)
-            {
-                var clone = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(m => m.Name == Player.Name && !m.IsMe);
+                {
+                    var clone = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(m => m.Name == Player.Name && !m.IsMe);
 
-                if (args == null || clone == null)
+                    if (args == null || clone == null)
+                    {
+                        return;
+                    }
+                    if (hero.NetworkId != clone.NetworkId)
+                    {
+                        return;
+                    }
+                    LastAATick = GameTimeTickCount;
+                }
+
+                if (args == null || hero == null)
                 {
                     return;
                 }
-                if (hero.NetworkId != clone.NetworkId)
+                if (ComboConfig.UseRcc && hero is AIHeroClient && hero.IsEnemy &&
+                    Player.Distance(hero) < Q.Range &&
+                    isDangerousSpell(
+                        args.SData.Name, args.Target as AIHeroClient, hero, args.End, float.MaxValue))
                 {
-                    return;
+                    R2.Cast();
                 }
-                LastAATick = GameTimeTickCount;
             }
-
-            if (args == null || hero == null)
-            {
-                return;
-            }
-            if (ComboConfig.UseRcc && hero is AIHeroClient && hero.IsEnemy &&
-                Player.Distance(hero) < Q.Range &&
-                isDangerousSpell(
-                    args.SData.Name, args.Target as AIHeroClient, hero, args.End, float.MaxValue))
-            {
-                R2.Cast();
-            }
-        }
         }
 
         public static bool HasSpell(string s)
@@ -805,7 +800,7 @@ public static void StringList(Menu menu, string uniqueId, string displayName, st
         }
         public static class EscapeConfig
         {
-      
+
             public static bool Evade
             {
                 get { return _evade.CurrentValue; }
@@ -935,120 +930,142 @@ public static void StringList(Menu menu, string uniqueId, string displayName, st
                 get { return _useitems.CurrentValue; }
             }
         }
-    
 
-    public static readonly string[] SmiteableUnits =
+
+        private static void JungleClear()
+        {
+
+            var minions = EntityManager.MinionsAndMonsters.Monsters.Where(t => t.IsValidTarget(E.Range));
+
+
+            if (minions == null || !minions.Any(t => t.IsValidTarget(E.Range)) || JungleMenu["mana%"].Cast<Slider>().CurrentValue > Player.ManaPercent) return;
+
+            var target = minions.Aggregate((curMax, x) => ((curMax == null && x.IsValid) || x.MaxHealth > curMax.MaxHealth ? x : curMax));
+
+            if (!target.IsValidTarget(E.Range))
+                target = minions.FirstOrDefault();
+
+            {
+                if (E.IsReady() && JungleMenu["jungleE"].Cast<CheckBox>().CurrentValue && E.IsInRange(target))
+                {
+                    E.Cast(target);
+                }
+            }
+        }
+
+        public static readonly string[] SmiteableUnits =
          {
             "SRU_Red", "SRU_Blue", "SRU_Dragon", "SRU_Baron",
             "SRU_Gromp", "SRU_Murkwolf", "SRU_Razorbeak",
             "SRU_Krug", "Sru_Crab"
         };
 
-    private static readonly int[] SmiteRed = { 3715, 1415, 1414, 1413, 1412 };
-    private static readonly int[] SmiteBlue = { 3706, 1403, 1402, 1401, 1400 };
+        private static readonly int[] SmiteRed = { 3715, 1415, 1414, 1413, 1412 };
+        private static readonly int[] SmiteBlue = { 3706, 1403, 1402, 1401, 1400 };
 
-    public static void Smitemethod()
-    {
-        SmiteMenu = ShacoMenu.AddSubMenu("Smite", "Smite");
-        SmiteMenu.AddSeparator();
-        SmiteMenu.Add("smiteActive",
-            new KeyBind("Smite Active (toggle)", true, KeyBind.BindTypes.PressToggle, 'H'));
-        SmiteMenu.AddSeparator();
-        SmiteMenu.Add("useSlowSmite", new CheckBox("KS with Blue Smite"));
-        SmiteMenu.Add("comboWithDuelSmite", new CheckBox("Combo with Red Smite"));
-        SmiteMenu.AddSeparator();
-        SmiteMenu.AddGroupLabel("Camps");
-        SmiteMenu.AddLabel("Epics");
-        SmiteMenu.Add("SRU_Baron", new CheckBox("Baron"));
-        SmiteMenu.Add("SRU_Dragon", new CheckBox("Dragon"));
-        SmiteMenu.AddLabel("Buffs");
-        SmiteMenu.Add("SRU_Blue", new CheckBox("Blue"));
-        SmiteMenu.Add("SRU_Red", new CheckBox("Red"));
-        SmiteMenu.AddLabel("Small Camps");
-        SmiteMenu.Add("SRU_Gromp", new CheckBox("Gromp", false));
-        SmiteMenu.Add("SRU_Murkwolf", new CheckBox("Murkwolf", false));
-        SmiteMenu.Add("SRU_Krug", new CheckBox("Krug", false));
-        SmiteMenu.Add("SRU_Razorbeak", new CheckBox("Razerbeak", false));
-        SmiteMenu.Add("Sru_Crab", new CheckBox("Skuttles", false));
 
-        Game.OnUpdate += SmiteEvent;
-    }
-
-    public static void SetSmiteSlot()
-    {
-        SpellSlot smiteSlot;
-        if (SmiteBlue.Any(x => Player.InventoryItems.FirstOrDefault(a => a.Id == (ItemId)x) != null))
-            smiteSlot = Player.GetSpellSlotFromName("s5_summonersmiteplayerganker");
-        else if (
-            SmiteRed.Any(
-                x => Player.InventoryItems.FirstOrDefault(a => a.Id == (ItemId)x) != null))
-            smiteSlot = Player.GetSpellSlotFromName("s5_summonersmiteduel");
-        else
-            smiteSlot = Player.GetSpellSlotFromName("summonersmite");
-        SmiteSpell = new Spell.Targeted(smiteSlot, 500);
-    }
-
-    public static int GetSmiteDamage()
-    {
-        var level = Player.Level;
-        int[] smitedamage =
+        public static void SetSmiteSlot()
         {
+            SpellSlot smiteSlot;
+            if (SmiteBlue.Any(x => Player.InventoryItems.FirstOrDefault(a => a.Id == (ItemId)x) != null))
+                smiteSlot = Player.GetSpellSlotFromName("s5_summonersmiteplayerganker");
+            else if (
+                SmiteRed.Any(
+                    x => Player.InventoryItems.FirstOrDefault(a => a.Id == (ItemId)x) != null))
+                smiteSlot = Player.GetSpellSlotFromName("s5_summonersmiteduel");
+            else
+                smiteSlot = Player.GetSpellSlotFromName("summonersmite");
+            SmiteSpell = new Spell.Targeted(smiteSlot, 500);
+        }
+
+        public static int GetSmiteDamage()
+        {
+            var level = Player.Level;
+            int[] smitedamage =
+            {
                 20*level + 370,
                 30*level + 330,
                 40*level + 240,
                 50*level + 100
             };
-        return smitedamage.Max();
-    }
+            return smitedamage.Max();
+        }
 
-    private static void SmiteEvent(EventArgs args)
-    {
-        SetSmiteSlot();
-        if (!SmiteSpell.IsReady() || Player.IsDead) return;
-        if (SmiteMenu["smiteActive"].Cast<KeyBind>().CurrentValue)
+        private static void SmiteEvent(EventArgs args)
         {
-            var unit =
-                EntityManager.MinionsAndMonsters.Monsters
-                    .Where(
-                        a =>
-                            SmiteableUnits.Contains(a.BaseSkinName) && a.Health < GetSmiteDamage() &&
-                            SmiteMenu[a.BaseSkinName].Cast<CheckBox>().CurrentValue)
-                    .OrderByDescending(a => a.MaxHealth)
-                    .FirstOrDefault();
+            SetSmiteSlot();
+            if (!SmiteSpell.IsReady() || Player.IsDead) return;
+            if (JungleMenu["smiteActive"].Cast<KeyBind>().CurrentValue)
+            {
+                var unit =
+                    EntityManager.MinionsAndMonsters.Monsters
+                        .Where(
+                            a =>
+                                SmiteableUnits.Contains(a.BaseSkinName) && a.Health < GetSmiteDamage() &&
+                                JungleMenu[a.BaseSkinName].Cast<CheckBox>().CurrentValue)
+                        .OrderByDescending(a => a.MaxHealth)
+                        .FirstOrDefault();
 
-            if (unit != null)
+                if (unit != null)
+                {
+                    SmiteSpell.Cast(unit);
+                    return;
+                }
+            }
+            if (JungleMenu["useSlowSmite"].Cast<CheckBox>().CurrentValue &&
+                SmiteSpell.Handle.Name == "s5_summonersmiteplayerganker")
             {
-                SmiteSpell.Cast(unit);
-                return;
+                foreach (
+                    var target in
+                        EntityManager.Heroes.Enemies
+                            .Where(h => h.IsValidTarget(SmiteSpell.Range) && h.Health <= 20 + 8 * Player.Level))
+                {
+                    SmiteSpell.Cast(target);
+                    return;
+                }
+            }
+            if (JungleMenu["comboWithDuelSmite"].Cast<CheckBox>().CurrentValue &&
+                SmiteSpell.Handle.Name == "s5_summonersmiteduel" &&
+                Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
+            {
+                foreach (
+                    var target in
+                        EntityManager.Heroes.Enemies
+                            .Where(h => h.IsValidTarget(SmiteSpell.Range)).OrderByDescending(TargetSelector.GetPriority)
+                    )
+                {
+                    SmiteSpell.Cast(target);
+                    return;
+                }
             }
         }
-        if (SmiteMenu["useSlowSmite"].Cast<CheckBox>().CurrentValue &&
-            SmiteSpell.Handle.Name == "s5_summonersmiteplayerganker")
-        {
-            foreach (
-                var target in
-                    EntityManager.Heroes.Enemies
-                        .Where(h => h.IsValidTarget(SmiteSpell.Range) && h.Health <= 20 + 8 * Player.Level))
-            {
-                SmiteSpell.Cast(target);
-                return;
-            }
-        }
-        if (SmiteMenu["comboWithDuelSmite"].Cast<CheckBox>().CurrentValue &&
-            SmiteSpell.Handle.Name == "s5_summonersmiteduel" &&
-            Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
-        {
-            foreach (
-                var target in
-                    EntityManager.Heroes.Enemies
-                        .Where(h => h.IsValidTarget(SmiteSpell.Range)).OrderByDescending(TargetSelector.GetPriority)
-                )
-            {
-                SmiteSpell.Cast(target);
-                return;
-            }
-        }
-    }
+
+        public static Item botrk = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item tiamat = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item hydra = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item titanic = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item randuins = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item odins = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item bilgewater = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item hexgun = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item Dfg = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item Bft = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item Ludens = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item Muramana = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item Muramana2 = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item sheen = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item gaunlet = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item trinity = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item lich = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item youmuu = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item frost = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item mountain = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item solari = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item Qss = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item Mercurial = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item Dervish = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item Zhonya = new Item((int)ItemId.Blade_of_the_Ruined_King);
+        public static Item Woooglet = new Item((int)ItemId.Blade_of_the_Ruined_King);
         public static void UseItems(Obj_AI_Base target, float comboDmg = 0f, bool cleanseSpell = false)
         {
             hydraTarget = target;
@@ -1061,17 +1078,7 @@ public static void StringList(Menu menu, string uniqueId, string displayName, st
                     Item.UseItem(randuins.Id);
                 }
             }
-            if (target != null && Item.HasItem(odins.Id) &&
-                Item.CanUseItem(odins.Id))
-            {
-                var odinDmg = player.GetItemDamage(target, ItemId.Odyns_Veil);
 
-                if (odinDmg > target.Health)
-                {
-                    odins.Cast(target);
-                }
-
-            }
             if (Item.HasItem(bilgewater.Id) &&
                 Item.CanUseItem(bilgewater.Id))
             {
@@ -1289,10 +1296,6 @@ public static void StringList(Menu menu, string uniqueId, string displayName, st
         public static float GetItemsDamage(Obj_AI_Base target)
         {
             double damage = 0;
-            if (Item.HasItem(odins.Id) && Item.CanUseItem(odins.Id))
-            {
-                damage += player.GetItemDamage(target, ItemId.Odyns_Veil);
-            }
             if (Item.HasItem(hexgun.Id) && Item.CanUseItem(hexgun.Id))
             {
                 damage += player.GetItemDamage(target, ItemId.Hextech_Gunblade);

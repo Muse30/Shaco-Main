@@ -145,10 +145,10 @@ namespace Shaco
                                            (enemy.MaxHealth + enemy.AllShield + enemy.AttackShield + enemy.MagicShield);
                     var startPoint = new Vector2(
                         (int)(enemy.HPBarPosition.X + BarOffset.X + damagePercentage * BarWidth),
-                        (int)(enemy.HPBarPosition.Y + BarOffset.Y) - 5);
+                        (int)(enemy.HPBarPosition.Y + BarOffset.Y) - 2);
                     var endPoint =
                         new Vector2((int)(enemy.HPBarPosition.X + BarOffset.X + healthPercentage * BarWidth) + 1,
-                            (int)(enemy.HPBarPosition.Y + BarOffset.Y) - 5);
+                            (int)(enemy.HPBarPosition.Y + BarOffset.Y) - 2);
                     Drawing.DrawLine(startPoint, endPoint, LineThickness, spell.Value);
 
                     damage -= spell.Key(enemy);
