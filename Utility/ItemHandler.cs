@@ -50,17 +50,6 @@ namespace Shaco
                     Item.UseItem(randuins.Id);
                 }
             }
-            if (target != null && Item.HasItem(odins.Id) &&
-                Item.CanUseItem(odins.Id))
-            {
-                var odinDmg = player.GetItemDamage(target, ItemId.Odyns_Veil);
-
-                if (odinDmg > target.Health)
-                    {
-                        odins.Cast(target);
-                    }            
-               
-            }
             if (Item.HasItem(bilgewater.Id) &&
                 Item.CanUseItem(bilgewater.Id))
             {
@@ -278,10 +267,6 @@ namespace Shaco
         public static float GetItemsDamage(Obj_AI_Base target)
         {
             double damage = 0;
-            if (Item.HasItem(odins.Id) && Item.CanUseItem(odins.Id))
-            {
-                damage += player.GetItemDamage(target, ItemId.Odyns_Veil);
-            }
             if (Item.HasItem(hexgun.Id) && Item.CanUseItem(hexgun.Id))
             {
                 damage += player.GetItemDamage(target, ItemId.Hextech_Gunblade);
@@ -295,11 +280,6 @@ namespace Shaco
             {
                 damage += player.CalculateDamageOnUnit(target, DamageType.Magical, Convert.ToInt32(player.BaseAttackDamage * 0.75 + player.FlatMagicDamageMod * 0.5));
             }        
-            if (Item.HasItem(Bft.Id) && Item.CanUseItem(Bft.Id))
-            {
-                damage = damage * 1.2;
-                damage += player.GetItemDamage(target, ItemId.Blackfire_Torch);
-            }
             if (Item.HasItem(tiamat.Id) && Item.CanUseItem(tiamat.Id))
             {
                 damage += player.GetItemDamage(target, ItemId.Tiamat_Melee_Only);
