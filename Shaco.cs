@@ -80,7 +80,7 @@ namespace Shaco
         public static void Loading_OnLoadingComplete(EventArgs args)
         {
             if (Player.Hero != Champion.Shaco) return;
-            Chat.Print("ThugDoge Shaco loaded, good luck :)");
+            Chat.Print("Shaco loaded");
             Q = new Spell.Targeted(SpellSlot.Q, 400);
             W = new Spell.Skillshot(SpellSlot.W, 425, SkillShotType.Circular);
             E = new Spell.Targeted(SpellSlot.E, 625);
@@ -95,7 +95,7 @@ namespace Shaco
             Tiamat = new Item((int)ItemId.Tiamat_Melee_Only, 420);
             Hydra = new Item((int)ItemId.Ravenous_Hydra_Melee_Only, 420);
 
-            ShacoMenu = MainMenu.AddMenu("ThugDoge Shaco", "shaco");
+            ShacoMenu = MainMenu.AddMenu("Shaco", "shaco");
             ComboMenu = ShacoMenu.AddSubMenu("Combo", "Combo");
             ComboMenu.AddSeparator();
             //Combo Menu
