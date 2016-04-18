@@ -15,31 +15,29 @@ namespace Shaco
         public static SpellSlot Smite;
         public static SpellSlot Ignite;
         private const int BarWidth = 104;
-        private const int LineThickness = 11;
-        private static readonly Vector2 BarOffset = new Vector2(1, 12); // -9, 11
+        private const int LineThickness = 9;
+        private static readonly Vector2 BarOffset = new Vector2(1, 0); // -9, 11
         private static Dictionary<DamageToUnitDelegate, Color> _spells;
 
         private static float QDamage(AIHeroClient hero)
-        {
-            if (Program.Q.IsReady())
-            {
-                return ObjectManager.Player.GetSpellDamage(hero, SpellSlot.Q);
+        {if (ThugDogeShaco.Q.IsReady()) { 
+            return ObjectManager.Player.GetSpellDamage(hero, SpellSlot.Q);
             }
             return 0;
         }
 
         private static float EDamage(AIHeroClient hero)
         {
-            if (Program.E.IsReady())
+            if (ThugDogeShaco.E.IsReady())
             {
                 return ObjectManager.Player.GetSpellDamage(hero, SpellSlot.E);
-            }
+             }
             return 0;
         }
 
         private static float RDamage(AIHeroClient hero)
         {
-            if (Program.Clone != null)
+            if (ThugDogeShaco.Clone != null)
             {
                 return ObjectManager.Player.GetSpellDamage(hero, SpellSlot.R);
             }
@@ -117,12 +115,12 @@ namespace Shaco
 
                 Ignite = Player.Instance.GetSpellSlotFromName("summonerdot");
             }
-        }
+          }
 
-        private static void Drawing_OnEndScene(EventArgs args)
+            private static void Drawing_OnEndScene(EventArgs args)
         {
 
-            if (!Program.DrawingConfig.DrawDamageBar)
+            if (!ThugDogeShaco.DrawingConfig.DrawDamageBar)
             {
                 return;
             }
@@ -145,10 +143,10 @@ namespace Shaco
                                            (enemy.MaxHealth + enemy.AllShield + enemy.AttackShield + enemy.MagicShield);
                     var startPoint = new Vector2(
                         (int)(enemy.HPBarPosition.X + BarOffset.X + damagePercentage * BarWidth),
-                        (int)(enemy.HPBarPosition.Y + BarOffset.Y) - 2);
+                        (int)(enemy.HPBarPosition.Y + BarOffset.Y) - 5);
                     var endPoint =
                         new Vector2((int)(enemy.HPBarPosition.X + BarOffset.X + healthPercentage * BarWidth) + 1,
-                            (int)(enemy.HPBarPosition.Y + BarOffset.Y) - 2);
+                            (int)(enemy.HPBarPosition.Y + BarOffset.Y) - 5);
                     Drawing.DrawLine(startPoint, endPoint, LineThickness, spell.Value);
 
                     damage -= spell.Key(enemy);

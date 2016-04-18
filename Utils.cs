@@ -46,7 +46,7 @@ namespace Shaco
             var edge = direction.To2D() - vector.To2D();
             edge.Normalize();
 
-            var v = vector.To2D() + edge * distance;
+            var v = vector.To2D() + edge*distance;
             return new Vector3(v.X, v.Y, vector.Z);
         }
     }
