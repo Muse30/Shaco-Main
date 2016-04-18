@@ -62,12 +62,12 @@ namespace Shaco.Utility
         {
             try
             {
-                if (Player.HealthPercent <= ThugDogeShaco.MiscConfig.JukeFleePercentage && ThugDogeShaco.R.IsReady())
+                if (Player.HealthPercent <= Shaco.MiscConfig.JukeFleePercentage && Shaco.R.IsReady())
                 {
                 var pet = Clone; //Player.Pet as Obj_AI_Base;      
-                    if (Clone == null && ThugDogeShaco.R2.IsReady())
+                    if (Clone == null && Shaco.R2.IsReady())
                     {
-                        ThugDogeShaco.R2.Cast();
+                        Shaco.R2.Cast();
                     }              
                     EloBuddy.Player.IssueOrder(
                         GameObjectOrder.MovePet,

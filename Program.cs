@@ -13,7 +13,7 @@ namespace Shaco
     {      
         static void Main(string[] args)
         {
-            Loading.OnLoadingComplete += ThugDogeShaco.Loading_OnLoadingComplete;
+            Loading.OnLoadingComplete += Shaco.Loading_OnLoadingComplete;
         }
     }
 }

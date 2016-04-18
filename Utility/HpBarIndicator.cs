@@ -20,7 +20,7 @@ namespace Shaco
         private static Dictionary<DamageToUnitDelegate, Color> _spells;
 
         private static float QDamage(AIHeroClient hero)
-        {if (ThugDogeShaco.Q.IsReady()) { 
+        {if (Shaco.Q.IsReady()) { 
             return ObjectManager.Player.GetSpellDamage(hero, SpellSlot.Q);
             }
             return 0;
@@ -28,7 +28,7 @@ namespace Shaco
 
         private static float EDamage(AIHeroClient hero)
         {
-            if (ThugDogeShaco.E.IsReady())
+            if (Shaco.E.IsReady())
             {
                 return ObjectManager.Player.GetSpellDamage(hero, SpellSlot.E);
              }
@@ -37,7 +37,7 @@ namespace Shaco
 
         private static float RDamage(AIHeroClient hero)
         {
-            if (ThugDogeShaco.Clone != null)
+            if (Shaco.Clone != null)
             {
                 return ObjectManager.Player.GetSpellDamage(hero, SpellSlot.R);
             }
@@ -120,7 +120,7 @@ namespace Shaco
             private static void Drawing_OnEndScene(EventArgs args)
         {
 
-            if (!ThugDogeShaco.DrawingConfig.DrawDamageBar)
+            if (!Shaco.DrawingConfig.DrawDamageBar)
             {
                 return;
             }

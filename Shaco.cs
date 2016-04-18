@@ -14,7 +14,7 @@ using SharpDX;
 
 namespace Shaco
 {
-    internal class ThugDogeShaco
+    internal class Shaco
     {
         public static bool CloneDelay;
         public static int CloneRange = 2300;

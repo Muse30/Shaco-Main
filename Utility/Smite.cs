@@ -35,27 +35,27 @@ namespace Shaco
 
         public static void Smitemethod()
         {
-            ThugDogeShaco.SmiteMenu = ThugDogeShaco.ShacoMenu.AddSubMenu("Smite", "Smite");
-            ThugDogeShaco.SmiteMenu.AddSeparator();
-            ThugDogeShaco.SmiteMenu.Add("smiteActive",
+            Shaco.SmiteMenu = Shaco.ShacoMenu.AddSubMenu("Smite", "Smite");
+            Shaco.SmiteMenu.AddSeparator();
+            Shaco.SmiteMenu.Add("smiteActive",
                 new KeyBind("Smite Active (toggle)", true, KeyBind.BindTypes.PressToggle, 'H'));
-            ThugDogeShaco.SmiteMenu.AddSeparator();
-            ThugDogeShaco.SmiteMenu.Add("useSlowSmite", new CheckBox("KS with Blue Smite"));
-            ThugDogeShaco.SmiteMenu.Add("comboWithDuelSmite", new CheckBox("Combo with Red Smite"));
-            ThugDogeShaco.SmiteMenu.AddSeparator();
-            ThugDogeShaco.SmiteMenu.AddGroupLabel("Camps");
-            ThugDogeShaco.SmiteMenu.AddLabel("Epics");
-            ThugDogeShaco.SmiteMenu.Add("SRU_Baron", new CheckBox("Baron"));
-            ThugDogeShaco.SmiteMenu.Add("SRU_Dragon", new CheckBox("Dragon"));
-            ThugDogeShaco.SmiteMenu.AddLabel("Buffs");
-            ThugDogeShaco.SmiteMenu.Add("SRU_Blue", new CheckBox("Blue"));
-            ThugDogeShaco.SmiteMenu.Add("SRU_Red", new CheckBox("Red"));
-            ThugDogeShaco.SmiteMenu.AddLabel("Small Camps");
-            ThugDogeShaco.SmiteMenu.Add("SRU_Gromp", new CheckBox("Gromp", false));
-            ThugDogeShaco.SmiteMenu.Add("SRU_Murkwolf", new CheckBox("Murkwolf", false));
-            ThugDogeShaco.SmiteMenu.Add("SRU_Krug", new CheckBox("Krug", false));
-            ThugDogeShaco.SmiteMenu.Add("SRU_Razorbeak", new CheckBox("Razerbeak", false));
-            ThugDogeShaco.SmiteMenu.Add("Sru_Crab", new CheckBox("Skuttles", false));
+            Shaco.SmiteMenu.AddSeparator();
+            Shaco.SmiteMenu.Add("useSlowSmite", new CheckBox("KS with Blue Smite"));
+            Shaco.SmiteMenu.Add("comboWithDuelSmite", new CheckBox("Combo with Red Smite"));
+            Shaco.SmiteMenu.AddSeparator();
+            Shaco.SmiteMenu.AddGroupLabel("Camps");
+            Shaco.SmiteMenu.AddLabel("Epics");
+            Shaco.SmiteMenu.Add("SRU_Baron", new CheckBox("Baron"));
+            Shaco.SmiteMenu.Add("SRU_Dragon", new CheckBox("Dragon"));
+            Shaco.SmiteMenu.AddLabel("Buffs");
+            Shaco.SmiteMenu.Add("SRU_Blue", new CheckBox("Blue"));
+            Shaco.SmiteMenu.Add("SRU_Red", new CheckBox("Red"));
+            Shaco.SmiteMenu.AddLabel("Small Camps");
+            Shaco.SmiteMenu.Add("SRU_Gromp", new CheckBox("Gromp", false));
+            Shaco.SmiteMenu.Add("SRU_Murkwolf", new CheckBox("Murkwolf", false));
+            Shaco.SmiteMenu.Add("SRU_Krug", new CheckBox("Krug", false));
+            Shaco.SmiteMenu.Add("SRU_Razorbeak", new CheckBox("Razerbeak", false));
+            Shaco.SmiteMenu.Add("Sru_Crab", new CheckBox("Skuttles", false));
 
             Game.OnUpdate += SmiteEvent;
         }
@@ -91,14 +91,14 @@ namespace Shaco
         {
             SetSmiteSlot();
             if (!SmiteSpell.IsReady() || Player.IsDead) return;
-            if (ThugDogeShaco.SmiteMenu["smiteActive"].Cast<KeyBind>().CurrentValue)
+            if (Shaco.SmiteMenu["smiteActive"].Cast<KeyBind>().CurrentValue)
             {
                 var unit =
                     EntityManager.MinionsAndMonsters.Monsters
                         .Where(
                             a =>
                                 SmiteableUnits.Contains(a.BaseSkinName) && a.Health < GetSmiteDamage() &&
-                                ThugDogeShaco.SmiteMenu[a.BaseSkinName].Cast<CheckBox>().CurrentValue)
+                                Shaco.SmiteMenu[a.BaseSkinName].Cast<CheckBox>().CurrentValue)
                         .OrderByDescending(a => a.MaxHealth)
                         .FirstOrDefault();
 
@@ -108,7 +108,7 @@ namespace Shaco
                     return;
                 }
             }
-            if (ThugDogeShaco.SmiteMenu["useSlowSmite"].Cast<CheckBox>().CurrentValue &&
+            if (Shaco.SmiteMenu["useSlowSmite"].Cast<CheckBox>().CurrentValue &&
                 SmiteSpell.Handle.Name == "s5_summonersmiteplayerganker")
             {
                 foreach (
@@ -120,7 +120,7 @@ namespace Shaco
                     return;
                 }
             }
-            if (ThugDogeShaco.SmiteMenu["comboWithDuelSmite"].Cast<CheckBox>().CurrentValue &&
+            if (Shaco.SmiteMenu["comboWithDuelSmite"].Cast<CheckBox>().CurrentValue &&
                 SmiteSpell.Handle.Name == "s5_summonersmiteduel" &&
                 Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
             {
