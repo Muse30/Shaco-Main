@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8FC4EFA4-278C-4D9F-BE63-740D7929D192}</ProjectGuid>
+    <ProjectGuid>{C7B1872F-AB2E-4D05-A56E-C01EE8F38656}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Shaco</RootNamespace>
@@ -42,14 +42,10 @@
     <Reference Include="EloBuddy.SDK">
       <HintPath>..\..\..\..\..\..\..\EloBuddy\System\EloBuddy.SDK.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\..\..\EloBuddy\System\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX">
       <HintPath>..\..\..\..\..\..\..\EloBuddy\System\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D9, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="SharpDX.Direct3D9">
       <HintPath>..\..\..\..\..\..\..\EloBuddy\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.XInput">
@@ -66,20 +62,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Utility\CloneFleeLogic.cs" />
-    <Compile Include="Utility\CombatHelper.cs" />
-    <Compile Include="Utility\HpBarIndicator.cs" />
-    <Compile Include="Utility\ItemHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility\Smite.cs" />
-    <Compile Include="Shaco.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
